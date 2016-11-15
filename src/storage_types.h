@@ -4,8 +4,8 @@
 #include <vector>
 #include <stdint.h>
 
-namespace abstract_stream_storage
-{
+//namespace abstract_stream_storage
+//{
 	const uint32_t TABLE_SIZE = 1213;
 	const int64_t NULL_REFERENCE = -1;
 
@@ -156,6 +156,6 @@ namespace abstract_stream_storage
 		_os.write(reinterpret_cast<const char*>(&_value.m_numberRecords), sizeof(_value.m_numberRecords));
 		return _os;
 	}
-}
+//}
 
 #endif

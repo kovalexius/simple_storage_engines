@@ -3,8 +3,8 @@
 
 #include <vector>
 
-namespace abstract_stream_storage
-{
+//namespace abstract_stream_storage
+//{
 	class IStreamStorage
 	{
 	public:
@@ -24,6 +24,6 @@ namespace abstract_stream_storage
 		virtual void Virtual_readMetaData() = 0;
 		virtual void Virtual_writeMetaData() = 0;
 	};
-}
+//}
 
 #endif

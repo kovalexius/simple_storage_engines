@@ -1,13 +1,15 @@
 ﻿#include "disk_storage.h"
 #include "hash_storage.h"
 
+#include "stream_storage.h"
+
 using namespace storage_impl;
 
 DiskStorage::DiskStorage(const std::string& _dbName = std::string("bd"), bool _fastStreams = false) : m_indexName(_dbName + std::string("_index")),
 																									  m_dataName(_dbName + std::string("_data"))
 {
 	//change this string only, if you want other implementation (i.e. MultikeyStorage)
-	m_storage = std::dynamic_pointer_cast<abstract_stream_storage::IStreamStorage>(std::make_shared<abstract_stream_storage::HashStorage>(m_indexFile, m_dataFile));
+	m_storage = std::dynamic_pointer_cast<IStreamStorage>(std::make_shared<HashStorage>(m_indexFile, m_dataFile));
 
 	if (_fastStreams)
 		std::ios::sync_with_stdio(false);

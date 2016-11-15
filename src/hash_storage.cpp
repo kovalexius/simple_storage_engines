@@ -4,7 +4,7 @@
 
 #include "hash_storage.h"
 
-using namespace abstract_stream_storage;
+//using namespace abstract_stream_storage;
 
 void HashStorage::rehash()
 {

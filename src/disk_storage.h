@@ -3,8 +3,9 @@
 
 #include <fstream>
 #include <filesystem>
+#include <vector>
 
-#include "stream_storage.h"
+class IStreamStorage;
 
 namespace storage_impl
 {
@@ -28,7 +29,7 @@ namespace storage_impl
 		std::filebuf m_indexFile;
 		std::filebuf m_dataFile;
 
-		std::shared_ptr<abstract_stream_storage::IStreamStorage> m_storage;
+        std::shared_ptr<IStreamStorage> m_storage;
 	};
 }
 

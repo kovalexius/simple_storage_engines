@@ -9,8 +9,8 @@
 #include "stream_storage.h"
 #include "storage_types.h"
 
-namespace abstract_stream_storage
-{
+//namespace abstract_stream_storage
+//{
 	// Основной класс, работающий со stream'ом
 	// Передай ему в конструктор буферы типа streambuf Индексной и Информационной сущности
 	class HashStorage : public IStreamStorage
@@ -86,6 +86,6 @@ namespace abstract_stream_storage
 		mutable std::istream m_dataIn;  // seekg(), operator>>() is not const
 		MetaData m_metaData;
 	};
-}
+//}
 
 #endif
