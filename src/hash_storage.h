@@ -3,23 +3,24 @@
 
 #include <vector>
 #include <streambuf>
+#include <iostream>
 
 #include <stdint.h>
 
 #include "stream_storage.h"
 #include "storage_types.h"
 
-//namespace abstract_stream_storage
-//{
+namespace abstract_stream_storage
+{
 	// Основной класс, работающий со stream'ом
 	// Передай ему в конструктор буферы типа streambuf Индексной и Информационной сущности
 	class HashStorage : public IStreamStorage
 	{
 	public:
-		HashStorage(std::streambuf& _index_buf, std::streambuf& _data_buf) : m_indexOut(&_index_buf, std::ios::binary | std::ios::out),
-			m_indexIn(&_index_buf, std::ios::binary | std::ios::in),
-			m_dataOut(&_data_buf, std::ios::binary | std::ios::out),
-			m_dataIn(&_data_buf, std::ios::binary | std::ios::in)
+		HashStorage(std::streambuf& _index_buf, std::streambuf& _data_buf) : m_indexOut(&_index_buf),
+																			 m_indexIn(&_index_buf),
+																			 m_dataOut(&_data_buf),
+																			 m_dataIn(&_data_buf)
 		{
 		}
 
@@ -27,20 +28,44 @@
 		{
 		}
 
-		virtual bool Virtual_Create(const std::vector<char>& _key, const std::vector<char>& _data) override;
-		virtual bool Virtual_Update(const std::vector<char>& _key, const std::vector<char>& _newData) override;
-		virtual bool Virtual_Delete(const std::vector<char>& _key) override;
-		virtual bool Virtual_Read(const std::vector<char>& _key, std::vector<char>& _outData) override;
 
+	////////////////////////////////////////// Public Virtual Interface //////////////////////////////////////////
+
+		virtual bool Virtual_Create(const std::vector<char>& _key, const std::vector<char>& _data) override;
+
+		virtual bool Virtual_Update(const std::vector<char>& _key, const std::vector<char>& _newData) override;
+
+		virtual bool Virtual_Update(const std::vector<char>& _key, const std::vector<char>& _newData,
+									std::function<bool(const std::vector<char>&)> _predicate) override;
+
+		virtual bool Virtual_Delete(const std::vector<char>& _key) override;
+
+		virtual bool Virtual_Delete(const std::vector<char>& _key,
+									std::function<bool(const std::vector<char>&)> _predicate) override;
+
+		virtual bool Virtual_Read(const std::vector<char>& _key, 
+								  std::vector<char>& _outData,
+								  std::function<bool(const std::vector<char>&)> _predicate = [](const std::vector<char>&)
+																							 {
+																								 return true;
+																							 }) override;
+
+		virtual bool Virtual_Read(const std::vector<char>& _key, std::vector<std::vector<char>>& _outDatas) override;
+
+		// test methods
 		virtual void Virtual_getKeyList(std::vector<std::vector<char>>& _keyList) override;
 		virtual void Virtual_debugPrintAllRecords() override;
 
+		// Clean, load and save control methods
 		virtual void Virtual_clearall() override;
 		virtual void Virtual_readMetaData() override;
 		virtual void Virtual_writeMetaData() override;
+
 	private:
+
 		////////////////////////////  Methods  ////////////////////////////
 
+		//! Calculate bucket index from byte array hash representation
 		size_t getIndexByKey(const std::vector<char>& _key);
 
 		//! Rehashing and 
@@ -78,6 +103,8 @@
 		//! get offsets, bucket index and appropriate record data 
 		void getRecordList(std::vector<std::tuple<int64_t, size_t, DataRecord>>& _recordList);
 
+
+
 		/////////////////////////////// Variables /////////////////////////////////
 
 		std::ostream m_indexOut;
@@ -86,6 +113,6 @@
 		mutable std::istream m_dataIn;  // seekg(), operator>>() is not const
 		MetaData m_metaData;
 	};
-//}
+}
 
 #endif

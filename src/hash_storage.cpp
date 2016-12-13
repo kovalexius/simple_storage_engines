@@ -4,7 +4,7 @@
 
 #include "hash_storage.h"
 
-//using namespace abstract_stream_storage;
+using namespace abstract_stream_storage;
 
 void HashStorage::rehash()
 {
@@ -236,7 +236,9 @@ bool HashStorage::Virtual_Create(const std::vector<char>& _key, const std::vecto
 	return true;
 }
 
-bool HashStorage::Virtual_Read(const std::vector<char>& _key, std::vector<char>& _outData)
+bool HashStorage::Virtual_Read(const std::vector<char>& _key, 
+							   std::vector<char>& _outData, 
+							   std::function<bool(const std::vector<char>&)> _predicate)
 {
 	auto index = getIndexByKey(_key);
 
@@ -255,6 +257,22 @@ bool HashStorage::Virtual_Read(const std::vector<char>& _key, std::vector<char>&
 	}
 
 	return false;
+}
+
+bool HashStorage::Virtual_Read(const std::vector<char>& _key, 
+							   std::vector<std::vector<char>>& _outDatas)
+{
+	std::vector<char> outData;
+
+	if (!Virtual_Read(_key, 
+					  outData))
+	{
+		return false;
+	}
+
+	_outDatas.push_back(outData);
+
+	return true;
 }
 
 bool HashStorage::Virtual_Delete(const std::vector<char>& _key)
@@ -304,6 +322,11 @@ bool HashStorage::Virtual_Delete(const std::vector<char>& _key)
 	return false;
 }
 
+bool HashStorage::Virtual_Delete(const std::vector<char>& _key, std::function<bool(const std::vector<char>&)> _predicate)
+{
+	return Virtual_Delete(_key);
+}
+
 bool HashStorage::Virtual_Update(const std::vector<char>& _key, const std::vector<char>& _newData)
 {
 	if (!Virtual_Delete(_key))
@@ -311,5 +334,10 @@ bool HashStorage::Virtual_Update(const std::vector<char>& _key, const std::vecto
 		return false;
 	}
 	return Virtual_Create(_key, _newData);
+}
+
+bool HashStorage::Virtual_Update(const std::vector<char>& _key, const std::vector<char>& _newData, std::function<bool(const std::vector<char>&)> _predicate)
+{
+	return Virtual_Update(_key, _newData);
 }
 

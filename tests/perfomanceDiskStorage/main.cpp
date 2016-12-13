@@ -14,7 +14,7 @@ void CleanAndReinit(int _numIterations, bool _speedup)
 	std::string bdName = "test_perfomance";
 	std::tr2::sys::remove(std::tr2::sys::path(bdName + "_index"));
 	std::tr2::sys::remove(std::tr2::sys::path(bdName + "_data"));
-	storage_impl::DiskStorage strg(bdName, _speedup);
+	storage_impl::DiskStorage strg(bdName, storage_impl::STORAGE_TYPES::HASH_STORAGE, _speedup);
 
 	std::cout << _numIterations << " Creates()" << std::endl;
 	auto startTime = std::chrono::system_clock::now();
@@ -27,7 +27,7 @@ void CleanAndReinit(int _numIterations, bool _speedup)
 void OpenAndRead(int _numIterations, bool _speedup)
 {
 	std::string bdName = "test_perfomance";
-	storage_impl::DiskStorage strg(bdName, _speedup);
+	storage_impl::DiskStorage strg(bdName, storage_impl::STORAGE_TYPES::HASH_STORAGE, _speedup);
 
 	std::cout << _numIterations << " Read()" << std::endl;
 
@@ -53,7 +53,7 @@ int main()
 
 	{
 		std::string bdName = "test_perfomance";
-		storage_impl::DiskStorage strg(bdName, true);
+		storage_impl::DiskStorage strg(bdName, storage_impl::STORAGE_TYPES::HASH_STORAGE, true);
 
 		auto numIterations = 1000;
 		std::cout << numIterations << " Delete()'s" << std::endl;
@@ -66,7 +66,7 @@ int main()
 
 	{
 		std::string bdName = "test_perfomance";
-		storage_impl::DiskStorage strg(bdName, true);
+		storage_impl::DiskStorage strg(bdName, storage_impl::STORAGE_TYPES::HASH_STORAGE, true);
 
 		auto numIterations = 1000;
 		std::cout << numIterations << " Update()'s" << std::endl;

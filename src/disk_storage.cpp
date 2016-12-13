@@ -1,15 +1,26 @@
 ﻿#include "disk_storage.h"
 #include "hash_storage.h"
-
-#include "stream_storage.h"
+#include "multikey_storage.h"
 
 using namespace storage_impl;
+using namespace abstract_stream_storage;
 
-DiskStorage::DiskStorage(const std::string& _dbName = std::string("bd"), bool _fastStreams = false) : m_indexName(_dbName + std::string("_index")),
-																									  m_dataName(_dbName + std::string("_data"))
+DiskStorage::DiskStorage(const std::string& _dbName = std::string("bd"), 
+						 STORAGE_TYPES _strgType = HASH_STORAGE, 
+						 bool _fastStreams = false) : m_indexName(_dbName + std::string("_index")),
+													  m_dataName(_dbName + std::string("_data"))
 {
-	//change this string only, if you want other implementation (i.e. MultikeyStorage)
-	m_storage = std::dynamic_pointer_cast<IStreamStorage>(std::make_shared<HashStorage>(m_indexFile, m_dataFile));
+	switch (_strgType)
+	{
+	case HASH_STORAGE:
+		m_storage = std::dynamic_pointer_cast<IStreamStorage>(std::make_shared<HashStorage>(m_indexFile, m_dataFile));
+		break;
+	case MULTIKEY_STORAGE:
+		m_storage = std::dynamic_pointer_cast<IStreamStorage>(std::make_shared<MultikeyStorage>(m_indexFile, m_dataFile));
+		break;
+	default:
+		m_storage = std::dynamic_pointer_cast<IStreamStorage>(std::make_shared<HashStorage>(m_indexFile, m_dataFile));
+	}
 
 	if (_fastStreams)
 		std::ios::sync_with_stdio(false);
@@ -53,7 +64,14 @@ bool DiskStorage::Create(const std::vector<char>& _key, const std::vector<char>&
 	return m_storage->Virtual_Create(_key, _data);
 }
 
-bool DiskStorage::Read(const std::vector<char>& _key, std::vector<char>& _outData)
+bool DiskStorage::Read(const std::vector<char>& _key, 
+					   std::vector<char>& _outData,
+					   std::function<bool(const std::vector<char>&)> _predicate)
+{
+	return m_storage->Virtual_Read(_key, _outData, _predicate);
+}
+
+bool DiskStorage::Read(const std::vector<char>& _key, std::vector<std::vector<char>>& _outData)
 {
 	return m_storage->Virtual_Read(_key, _outData);
 }
@@ -63,9 +81,22 @@ bool DiskStorage::Update(const std::vector<char>& _key, const std::vector<char>&
 	return m_storage->Virtual_Update(_key, _newData);
 }
 
+bool DiskStorage::Update(const std::vector<char>& _key, 
+						 const std::vector<char>& _newData, 
+						 std::function<bool(const std::vector<char>&)> _predicate)
+{
+	return m_storage->Virtual_Update(_key, _newData, _predicate);
+}
+
 bool DiskStorage::Delete(const std::vector<char>& _key)
 {
 	return m_storage->Virtual_Delete(_key);
+}
+
+bool DiskStorage::Delete(const std::vector<char>& _key, 
+						 std::function<bool(const std::vector<char>&)> _predicate)
+{
+	return m_storage->Virtual_Delete(_key, _predicate);
 }
 
 void DiskStorage::getKeyList(std::vector<std::vector<char>>& _keyList)

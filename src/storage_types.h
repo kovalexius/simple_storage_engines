@@ -4,8 +4,8 @@
 #include <vector>
 #include <stdint.h>
 
-//namespace abstract_stream_storage
-//{
+namespace abstract_stream_storage
+{
 	const uint32_t TABLE_SIZE = 1213;
 	const int64_t NULL_REFERENCE = -1;
 
@@ -44,15 +44,15 @@
 	// Декларируем поля которые составляют запись в таблице данных;
 	struct DataRecord //: IAbstractStructure
 	{
-		DataRecord() : m_next(NULL_REFERENCE),
-					   m_prev(NULL_REFERENCE)
+		DataRecord() : m_prev(NULL_REFERENCE),
+					   m_next(NULL_REFERENCE)
 		{
 		}
 
 		explicit DataRecord(const std::vector<char>& _key, const std::vector<char>& _data) : m_key(_key.begin(), _key.end()),
 																							 m_data(_data),
-																							 m_next(NULL_REFERENCE),
-																							 m_prev(NULL_REFERENCE)
+																							 m_prev(NULL_REFERENCE),
+																							 m_next(NULL_REFERENCE)
 		{
 		}
 
@@ -156,6 +156,6 @@
 		_os.write(reinterpret_cast<const char*>(&_value.m_numberRecords), sizeof(_value.m_numberRecords));
 		return _os;
 	}
-//}
+}
 
 #endif
